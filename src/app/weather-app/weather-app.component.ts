@@ -1,14 +1,32 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { MatTableDataSource } from '@angular/material/table';
+
+export interface WeatherData {
+  main: {
+    temp: number;
+    temp_max: number;
+    temp_min: number;
+    humidity: number;
+  };
+  wind: {
+    speed: number;
+  };
+  weather: {
+    main: string;
+  };
+}
 
 @Component({
   selector: 'app-weather-app',
   templateUrl: './weather-app.component.html',
   styleUrls: ['./weather-app.component.scss']
 })
+
 export class WeatherAppComponent implements OnInit {
 
-  apiData: any;
+  dataSource: MatTableDataSource<WeatherData>;
+  displayedColumns: string[] = ['temp', 'temp_max', 'temp_min', 'humidity', 'speed', 'description'];
 
   constructor(
     private http: HttpClient,
@@ -16,11 +34,12 @@ export class WeatherAppComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.dataSource = new MatTableDataSource([]);
     this.loadData();
   }
 
   loadData(): void {
-    this.http.get(
+    this.http.get<WeatherData>(
       'https://community-open-weather-map.p.rapidapi.com/weather',
       {
         params: {
@@ -34,7 +53,7 @@ export class WeatherAppComponent implements OnInit {
       }
     ).subscribe((data) => {
       console.log(data);
-      this.apiData = data;
+      this.dataSource.data = [data];
     });
   }
 }
