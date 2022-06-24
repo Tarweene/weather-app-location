@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
 
 export interface WeatherData {
@@ -27,15 +28,41 @@ export class WeatherAppComponent implements OnInit {
 
   dataSource: MatTableDataSource<WeatherData>;
   displayedColumns: string[] = ['temp', 'temp_max', 'temp_min', 'humidity', 'speed', 'description'];
+  slovakiaCities = ['Bratislava', 'Kosice', 'Nitra'];
+  czechiaCities = ['Prague', 'Brno', 'Olomouc'];
+  czechiaTrue: boolean;
+  slovakiaTrue: boolean;
+  selectedCity = '';
+  countrySelect: FormGroup;
 
   constructor(
     private http: HttpClient,
-    ) {
+    private fb: FormBuilder,
+  ) {
   }
 
   ngOnInit(): void {
+    this.countrySelect = this.fb.group({
+        countrySelection: [null, []],
+        citySelection: [null, []],
+      }
+    );
+
+    this.countrySelect.valueChanges.subscribe(data => {
+      this.selectedCity = data.citySelection;
+      if (data.countrySelection === 'czechia') {
+        this.czechiaTrue = true;
+        this.slovakiaTrue = false;
+      } else if (data.countrySelection === 'slovakia') {
+        this.slovakiaTrue = true;
+        this.czechiaTrue = false;
+      }
+      if (this.selectedCity !== null) {
+        this.loadData();
+      }
+    });
     this.dataSource = new MatTableDataSource([]);
-    this.loadData();
+
   }
 
   loadData(): void {
@@ -43,7 +70,7 @@ export class WeatherAppComponent implements OnInit {
       'https://community-open-weather-map.p.rapidapi.com/weather',
       {
         params: {
-          q: 'London,uk',
+          q: this.selectedCity,
           units: 'metric'
         },
         headers: {
@@ -52,7 +79,6 @@ export class WeatherAppComponent implements OnInit {
         }
       }
     ).subscribe((data) => {
-      console.log(data);
       this.dataSource.data = [data];
     });
   }
