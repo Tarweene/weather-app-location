@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
+import { environment } from '../../environments/environment';
 
 export interface WeatherData {
   main: {
@@ -73,7 +74,7 @@ export class WeatherAppComponent implements OnInit {
           units: 'metric'
         },
         headers: {
-          'X-RapidAPI-Key': '4f4ad942cfmshc9bd006f0884cfap176854jsnaf05d9861dba',
+          'X-RapidAPI-Key': environment.apiKey,
           'X-RapidAPI-Host': 'community-open-weather-map.p.rapidapi.com'
         }
       }
