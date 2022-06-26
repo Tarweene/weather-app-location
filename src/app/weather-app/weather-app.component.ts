@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
 
 export interface WeatherData {
@@ -32,7 +32,7 @@ export class WeatherAppComponent implements OnInit {
   czechiaCities = ['Prague', 'Brno', 'Olomouc'];
   czechiaTrue: boolean;
   slovakiaTrue: boolean;
-  selectedCity = '';
+  selectedCity: string | null = null;
   countrySelect: FormGroup;
 
   constructor(
@@ -43,8 +43,8 @@ export class WeatherAppComponent implements OnInit {
 
   ngOnInit(): void {
     this.countrySelect = this.fb.group({
-        countrySelection: [null, []],
-        citySelection: [null, []],
+        countrySelection: [null, [Validators.required]],
+        citySelection: [null, [Validators.required]],
       }
     );
 
@@ -62,7 +62,6 @@ export class WeatherAppComponent implements OnInit {
       }
     });
     this.dataSource = new MatTableDataSource([]);
-
   }
 
   loadData(): void {
